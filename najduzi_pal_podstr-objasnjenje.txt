@@ -1,0 +1,25 @@
+Program radi tako sto iterira kroz dati string. Za svaki karakter u stringu, uzimamo levi i desni karakter 
+od njega (nazovimo ih low i high). 
+Prvo, ukoliko su ti karakteri i karakteri levo i desno od njih isti kao trazeni karakter koji poredimo, 
+mi low i high pomeramo, ovim eliminisemo iste karaktere oko "centra", koji su palindromi po automatizmu 
+i svodimo slucaj gde je palindrom parne i neparne duzine na isti slucaj.
+Nakon ovoga poredimo da li su low i high isti. Ukoliko jesu, oba indeksa pomeramo za po jedno mesto 
+(low za -1, high za +1) i nastavljamo poredjenje, ili dok ne dodjemo do krajeva stringa(0 i n) ili dok ne naidjemo 
+na karaktere na indeksima low i high koji se razlikuju.
+Ovaj postupak ponavljamo za svaki karakter u stringu, i usput belezimo najduzi string koji smo do sada 
+pronasli (u varijabli maxDuzina), kao i indeks pocetka palindroma (u varijabli start).
+
+Slozenost:
+Kod iterira kroz svaki karakter stringa.
+Ovo daje vremensku složenost od O(n), gde je n duzina ulaznog stringa.
+Za svaki karakter, kod se prosiruje sa obe strane da bi se pronasao najduzi palindromski podstring 
+centriran na taj karakter. U najgorem slucaju, svaki karakter moze biti centar najduzeg palindromskog podstringa.
+Na primer, u slučaju stringa sa svim istim karakterima, ili stringa sa naizmenicnim karakterima. 
+Ovo bi rezultiralo vremenskom slozenoscu od O(n) za svaki karakter.
+Medjutim, u proseku, prosirenje neće dostići kraj stringa za svaki karakter. 
+Dakle, prosecna slozenost za prosirenje oko svakog karaktera bi bila manja od O(n), 
+ali i dalje linearna u odnosu na dužinu stringa.
+Kombinujući iteraciju kroz string i proširenje oko svakog karaktera,
+ukupna vremenska složenost ovog algoritma je O(n^2), gde je n dužina ulaznog stringa. 
+To je zato što za svaki od n karaktera u stringu potencijalno može postojati 
+još n karaktera za proširenje, što bi bilo O(n * n) = O(n^2).
