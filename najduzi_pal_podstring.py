@@ -3,9 +3,8 @@ def najduzi_palindromski_substring(string):
     
     n = len(string) 
     
-	# Prazan string je duzine 0, a svaki pojedinacni karakter je uvek palindrom
-    if (n < 2):
-        return n 
+    if (n == 0):
+        return 0, 0
     
     start=0
     maxLength = 1
