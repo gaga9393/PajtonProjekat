@@ -1,14 +1,14 @@
 import sqlite3
 import pandas as pd
 
-
+# Konekcija na bazu
 conn = sqlite3.connect("zaposleniDB.db")
 cur = conn.cursor()
 broj_zaposlenih = 0
 
 def create_table_zaposleni():
     sql = """
-        CREATE TABLE ZaposleniRadnici(
+        CREATE TABLE IF NOT EXISTS ZaposleniRadnici(
             zaposleniID INTEGER PRIMARY KEY,
             First_Name VARCHAR(255) NOT NULL,
             Last_Name VARCHAR(255) NOT NULL,
@@ -22,6 +22,15 @@ def create_table_zaposleni():
 
 
 def import_data_zaposleni():
+
+    # Provera da li smo vec uneli podatke
+    sql = "SELECT COUNT(*) FROM ZaposleniRadnici"
+    cur.execute(sql)
+    rows = cur.fetchone()[0]
+    if (rows > 0):
+        return
+
+    # Citamo excel fajl, vraca tip DataFrame koji prezentuje podatke u tabelarnom formatu
     df = pd.read_excel("zaposleni.xlsx")
     first_name = df['First Name'].tolist()
     last_name = df['Last Name'].tolist()
@@ -35,14 +44,19 @@ def import_data_zaposleni():
         konvertovana_plata = int(plata[i])           
         cur.execute("""INSERT INTO ZaposleniRadnici VALUES (:zaposleniID,:First_Name,:Last_Name,:Username,:Email,:Plata)""",
                     {"zaposleniID":None,"First_Name":first_name[i],"Last_Name":last_name[i],"Username":username[i],"Email":email[i],"Plata":konvertovana_plata})
-
+    
     conn.commit()
 
 def ucitaj_zaposleni():
     cur.execute("SELECT * FROM ZaposleniRadnici")
-    global broj_zaposlenih
-    for _ in range(broj_zaposlenih):
-        print(cur.fetchone())    
+    rows = cur.fetchall()
+
+    if (not rows):
+        print("Nema podataka.")
+        return
+
+    for row in rows:
+        print(row)
 
 
 create_table_zaposleni()
@@ -70,12 +84,12 @@ def ime_na_slovo_a():
              FROM ZaposleniRadnici
              WHERE First_Name LIKE 'A%' or First_Name LIKE 'a%'"""
     cur.execute(sql)
-    imena_na_a= cur.fetchall()
+    imena_na_a= cur.fetchall() 
     return imena_na_a
 
 
 prosecna = prosecna_plata()
-print("Prosecna plata radnika: ", round(prosecna))    
+print("Prosecna plata radnika: ", round(prosecna)) 
 
 treca_najveca = treca_najveca_plata()
 print("Treca najveca plata: ", treca_najveca)
