@@ -30,10 +30,10 @@ def create_zaposleni(first_name,last_name,username,email,plata):
 # READ zaposleni
 def get_zaposleni():
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = conn.cursor() 
     cursor.execute("SELECT * FROM ZaposleniRadnici")
-    rows = cursor.fetchall()
-    zaposleni = []
+    rows = cursor.fetchall() 
+    zaposleni = [] 
     for row in rows:
         zaposlen = Zaposleni(row[0],row[1],row[2],row[3],row[4],row[5])
         zaposleni.append(zaposlen)
@@ -44,7 +44,7 @@ def get_zaposleni_po_id(zaposleniID):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM ZaposleniRadnici WHERE zaposleniID = ?",(zaposleniID,))
-    row = cursor.fetchone()
+    row = cursor.fetchone() 
     conn.close()
     if row:
         zaposlen = Zaposleni(row[0],row[1],row[2],row[3],row[4],row[5])
@@ -58,11 +58,11 @@ def update_zaposleni(zaposleniID,first_name,last_name,username,email,plata):
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute("UPDATE ZaposleniRadnici SET First_Name = ?,Last_Name = ?,Username= ?,Email= ?,Plata= ? WHERE zaposleniID = ?", (first_name,last_name,username,email,plata,zaposleniID))
-        result = cursor.rowcount > 0
+        result = cursor.rowcount > 0 
         conn.commit()
         conn.close()
-        return result
-    except Exception as e:
+        return result 
+    except Exception as e: 
         print(f"Greska: ", {e})
         return False
 
@@ -85,27 +85,31 @@ def delete_zaposleni(zaposleniID):
 def zaposleni():
     if request.method == "GET":
         zaposleni = get_zaposleni()
-        return jsonify({"zaposleni": [vars(z) for z in zaposleni]}), 200
+        return jsonify({"zaposleni": [vars(z) for z in zaposleni]}), 200  
     elif request.method == "POST":
-        data = request.get_json()
-        first_name = data.get("First_Name")
-        last_name = data.get("Last_Name")
-        username = data.get("Username")
-        email = data.get("Email")
-        plata = data.get("Plata")
-        create_zaposleni(first_name,last_name,username,email,plata)
-        return jsonify({"message":"Uspesno kreiran zaposleni!"}), 201
-    
+        try:
+            data = request.get_json() #preuzima JSON podatke poslate sa zahtevom
+            first_name = data.get("First_Name")
+            last_name = data.get("Last_Name")
+            username = data.get("Username")
+            email = data.get("Email",None)
+            plata = data.get("Plata",0)
+            create_zaposleni(first_name,last_name,username,email,plata)
+            return jsonify({"message":"Uspesno kreiran zaposleni!"}), 201
+        except Exception as e:
+            return jsonify({"error":"Greska prilikom kreiranja zaposlenog"}), 422
+
+
 @app.route("/zaposleni/<int:zaposleniID>", methods=["GET","PUT","DELETE"]) 
 def zaposleni_po_id(zaposleniID):
     if request.method == "GET":
         zaposlen = get_zaposleni_po_id(zaposleniID)
-        if zaposlen:
-            return jsonify(vars(zaposlen)), 200
-        else:
+        if zaposlen: 
+            return jsonify(vars(zaposlen)), 200 
+        else: 
             return jsonify({"error":"Zaposleni nije pronadjen!"}), 404
     elif request.method == "PUT":
-        data = request.get_json()
+        data = request.get_json() #preuzima JSON podatke poslate sa zahtevom
         first_name = data.get("First_Name")
         last_name = data.get("Last_Name")
         username = data.get("Username")
@@ -125,7 +129,10 @@ def zaposleni_po_id(zaposleniID):
             return jsonify({"error":"Nije pronadjen zaposleni!"}), 404
     
 
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True) 
+
+
 
             
